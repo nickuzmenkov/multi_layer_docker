@@ -1,11 +1,14 @@
 FROM maven:3.9.6-eclipse-temurin-17 as builder
 WORKDIR /app
 COPY pom.xml pom.xml
+RUN mvn dependency:go-offline
 COPY src src
-RUN mvn clean install
+ARG ARTIFACT_VERSION
+RUN mvn package -DskipTests -Drevision=$ARTIFACT_VERSION
 
 FROM eclipse-temurin:17-jre
 RUN useradd --no-create-home -s /bin/bash runtime
 USER runtime
-COPY --from=builder /app/target/multi_layer_docker-1.0-SNAPSHOT.jar app.jar
+ARG ARTIFACT_VERSION
+COPY --from=builder /app/target/multi_layer_docker-$ARTIFACT_VERSION.jar app.jar
 CMD ["java", "-jar", "app.jar"]

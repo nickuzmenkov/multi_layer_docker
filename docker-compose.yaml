@@ -4,3 +4,5 @@ services:
     build:
       dockerfile: 'src/main/docker/Dockerfile.staged'
       context: '.'
+      args:
+        ARTIFACT_VERSION: '1.0-SNAPSHOT'
